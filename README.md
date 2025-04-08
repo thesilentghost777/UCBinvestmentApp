@@ -11,6 +11,39 @@ Assurez-vous d'avoir installé :
 - MySQL ou autre SGBD compatible
 - Git
 
+si ce n'est pas le cas , voici la procedure
+
+✅ Mise à jour initiale des paquets
+
+sudo apt update
+
+✅ PHP 8.1 et extensions nécessaires
+
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:ondrej/php
+sudo apt update
+sudo apt install php8.1 php8.1-cli php8.1-mbstring php8.1-xml php8.1-curl php8.1-mysql php8.1-zip unzip
+
+✅ Composer
+
+sudo apt install curl php-cli unzip
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+
+✅ Node.js et NPM
+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs
+
+✅ MySQL
+
+sudo apt install mysql-server
+
+✅ Git
+
+sudo apt install git
+
+
 ## Configuration initiale
 
 Suivez ces étapes pour configurer le projet après l'avoir cloné :
@@ -18,7 +51,7 @@ Suivez ces étapes pour configurer le projet après l'avoir cloné :
 ### 1. Cloner le projet
 
 ```bash
-git clone [URL_DU_REPO] nom-du-projet
+git clone https://github.com/thesilentghost777/Ict4Hackaton.git nom-du-projet
 cd nom-du-projet
 ```
 
