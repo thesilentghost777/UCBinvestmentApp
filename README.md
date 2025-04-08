@@ -2,6 +2,11 @@
 
 Bienvenue sur notre projet de hackathon Laravel ! Ce README vous guidera à travers les étapes nécessaires pour installer et configurer correctement l'environnement de développement.
 
+## nb:
+
+Si vous êtes débutant dans l'utilisation des outils en ligne de commande, téléchargez manuellement le fichier install.sh et exécutez-le en mode super utilisateur (root). puis rdv a la section 7 : Demarrage du serveur
+
+
 ## Prérequis
 
 Assurez-vous d'avoir installé :
@@ -51,8 +56,8 @@ Suivez ces étapes pour configurer le projet après l'avoir cloné :
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/thesilentghost777/Ict4Hackaton.git nom-du-projet
-cd nom-du-projet
+git clone https://github.com/thesilentghost777/Ict4Hackaton.git
+cd Ict4Hackaton
 ```
 
 ### 2. Installation des dépendances PHP
@@ -118,7 +123,7 @@ npm run dev
 npm run build
 ```
 
-## Démarrage du serveur
+### 7. Démarrage du serveur
 
 ```bash
 # Lancer le serveur de développement Laravel
