@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Services\EthereumService;
 use Illuminate\Http\Request;
+use App\Services\BlockchainSimulationService;
 use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
@@ -40,6 +41,9 @@ class WalletController extends Controller
      */
     public function deposit(Request $request)
     {
+        $blockchainService = app(BlockchainSimulationService::class);
+
+        $transactionHash = $blockchainService->generateTransactionHash();
         $request->validate([
             'amount' => 'required|numeric|min:0.0001',
         ]);
@@ -57,6 +61,7 @@ class WalletController extends Controller
                 'receiver_id' => $user->id,
                 'amount' => $request->amount,
                 'type' => 'deposit',
+                'transaction_hash' =>  $transactionHash,
                 'status' => 'completed',
                 'description' => 'Dépôt de fonds'
             ]);
@@ -81,6 +86,9 @@ class WalletController extends Controller
      */
     public function withdraw(Request $request)
     {
+        $blockchainService = app(BlockchainSimulationService::class);
+
+        $transactionHash = $blockchainService->generateTransactionHash();
         $request->validate([
             'amount' => 'required|numeric|min:0.0001',
         ]);
@@ -101,6 +109,7 @@ class WalletController extends Controller
         Transaction::create([
             'sender_id' => $user->id,
             'receiver_id' => $user->id,  // Dans un retrait, le destinataire est l'utilisateur lui-même
+            'transaction_hash' =>  $transactionHash,
             'amount' => $request->amount,
             'type' => 'withdrawal',
             'status' => 'completed',

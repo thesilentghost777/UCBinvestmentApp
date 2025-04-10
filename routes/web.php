@@ -6,6 +6,8 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlockchainTransactionController;
+
 
 require __DIR__.'/auth.php';
 #utiliser le auth.php avec require
@@ -52,6 +54,7 @@ Route::middleware('auth')->group(function () {
     // Transactions
     Route::prefix('transactions')->name('transactions.')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('index');
+
         Route::get('/transfer', [TransactionController::class, 'showTransferForm'])->name('transfer.form');
         Route::post('/transfer', [TransactionController::class, 'transfer'])->name('transfer');
         Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show');
@@ -59,7 +62,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    // Friends
+    Route::get('/simulate2/{id}', [TransactionController::class, 'index2'])->name('simulate');    // Friends
     Route::prefix('friends')->name('friends.')->group(function () {
         Route::get('/', [FriendController::class, 'index'])->name('index');
         Route::get('/search', [FriendController::class, 'showSearchForm'])->name('search.form');
@@ -73,5 +76,11 @@ Route::middleware('auth')->group(function () {
     });
     Route::get('/set-pin', [TransactionController::class, 'showSetPinForm2'])->name('set.pin');
 Route::post('/transactions/set-pin', [TransactionController::class, 'setPin'])->name('transactions.set-pin');
+
+// Routes pour les transactions blockchain
+Route::get('/transactions', [BlockchainTransactionController::class, 'index'])->name('transactions.index');
+Route::get('/transaction/search', [BlockchainTransactionController::class, 'search'])->name('transaction.search');
+Route::post('/transaction/search', [BlockchainTransactionController::class, 'show'])->name('transaction.find');
+Route::get('/transaction/{hash}', [BlockchainTransactionController::class, 'show'])->name('transaction.status');
 
 });

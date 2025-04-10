@@ -7,7 +7,7 @@
         <div class="flex flex-col md:flex-row items-center justify-between">
             <div class="md:w-1/2 mb-10 md:mb-0">
                 <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                    <span class="block">MoTransChain</span>
+                    <span class="block">TRUSTIX</span>
                     <span class="block text-secondary-400">Transferts d'argent sécurisés par blockchain</span>
                 </h1>
                 <p class="mt-6 text-xl max-w-3xl">
@@ -19,8 +19,9 @@
                 </div>
             </div>
             <div class="md:w-1/2">
-                <img src="https://via.placeholder.com/600x400?text=MoTransChain" alt="MoTransChain" class="rounded-lg shadow-xl">
+                <img src="{{ asset('logo/trustix-removebg-preview.png') }}" alt="TRUSTIX" class="rounded-lg shadow-xl">
             </div>
+
         </div>
     </div>
 </div>
@@ -29,7 +30,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                Pourquoi choisir MoTransChain?
+                Pourquoi choisir TRUSTIX?
             </h2>
             <p class="mt-4 text-lg text-gray-500">
                 Notre plateforme offre de nombreux avantages par rapport aux services de transfert traditionnels.
