@@ -172,4 +172,4 @@ php artisan cache:clear
 - **Les assets ne se chargent pas** : Assurez-vous d'avoir exécuté `npm run dev` ou `npm run build`
 - **Erreur 500** : Vérifiez les logs dans `storage/logs/laravel.log`
 
-Bon hackathon à tous ! 🚀
+Bon hackathon à tous ! 🚀# UCBinvestmentApp
