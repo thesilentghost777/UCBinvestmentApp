@@ -1,16 +1,28 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FriendController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\WalletController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BlockchainTransactionController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\PackageController;
+use App\Http\Controllers\Admin\TacheController as AdminTacheController;
+use App\Http\Controllers\Admin\InvestissementController as AdminInvestissementController;
+use App\Http\Controllers\Admin\RetraitController as AdminRetraitController;
+use App\Http\Controllers\TacheController;
+use App\Http\Controllers\TacheJournaliereController;
+use App\Http\Controllers\InvestissementController;
+use App\Http\Controllers\RetraitController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ParrainageController;
+use App\Http\Controllers\FirstLoginController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\InvestissementPaiementController;
+use App\Http\Controllers\Admin\ConfigDepotController;
 
 
 require __DIR__.'/auth.php';
-#utiliser le auth.php avec require
+require __DIR__.'/api.php';
+
 Route::middleware(['auth'])->group(function () {
     // Profil utilisateur
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -19,7 +31,74 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::get('/api/payment-status/{{ $investissement->id }}', [InvestissementPaiementController::class, 'apiStatus']);
 
+// Routes publiques
+Route::get('/', function () {
+    return view('welcome');
+});
+//routes pour l'admin
+
+Route::prefix('/admin')->name('admin.')->middleware(['auth','admin'])->group(function () {
+    // Dashboard admin
+    Route::get('/index', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::post('/taches/{tache}/toggle-status', [\App\Http\Controllers\Admin\TacheController::class, 'toggleStatus'])->name('taches.toggle-status');
+    Route::get('/config-depots/edit', [ConfigDepotController::class, 'edit'])->name('config-depots.edit');
+    Route::post('/config-depots/update', [ConfigDepotController::class, 'update'])->name('config-depots.update');
+    Route::delete('/config-depots/destroy', [ConfigDepotController::class, 'destroy'])->name('config-depots.destroy');
+    // Gestion des soldes
+    Route::get('/solde', [AdminController::class, 'soldeForm'])->name('solde');
+    Route::post('/solde', [AdminController::class, 'updateSolde'])->name('solde.update');
+    // Prévisions de profit
+    Route::get('/profit-prediction', [AdminController::class, 'profitPrediction'])->name('profit-prediction');
+
+    // Statistiques utilisateurs
+    Route::get('/user-stats', [AdminController::class, 'userStats'])->name('user-stats');
+
+    // Gestion des packages
+    Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
+    Route::get('/packages/create', [PackageController::class, 'create'])->name('packages.create');
+    Route::post('/packages', [PackageController::class, 'store'])->name('packages.store');
+    Route::get('/packages/{package}/edit', [PackageController::class, 'edit'])->name('packages.edit');
+    Route::put('/packages/{package}', [PackageController::class, 'update'])->name('packages.update');
+    Route::get('/packages/{package}', [PackageController::class, 'show'])->name('packages.show');
+    Route::patch('/packages/{package}/toggle', [PackageController::class, 'toggleStatus'])->name('packages.toggle');
+
+    // Gestion des tâches
+    Route::get('/taches', [AdminTacheController::class, 'index'])->name('taches.index');
+    Route::get('/taches/create', [AdminTacheController::class, 'create'])->name('taches.create');
+    Route::post('/taches', [AdminTacheController::class, 'store'])->name('taches.store');
+    Route::get('/taches/{tache}/edit', [AdminTacheController::class, 'edit'])->name('taches.edit');
+    Route::put('/taches/{tache}', [AdminTacheController::class, 'update'])->name('taches.update');
+    Route::get('/taches/{tache}', [AdminTacheController::class, 'show'])->name('taches.show');
+    Route::patch('/taches/{tache}/toggle', [AdminTacheController::class, 'toggleStatus'])->name('taches.toggle');
+    Route::get('/taches-stats', [AdminTacheController::class, 'statistics'])->name('taches.statistics');
+
+    // Gestion des investissements
+    Route::get('/investissements', [AdminInvestissementController::class, 'index'])->name('investissements.index');
+    Route::get('/investissements/pending', [AdminInvestissementController::class, 'pending'])->name('investissements.pending');
+    Route::post('/investissements/{investissement}/validate', [AdminInvestissementController::class, 'validate'])->name('investissements.validate');
+    Route::post('/investissements/{investissement}/reject', [AdminInvestissementController::class, 'reject'])->name('investissements.reject');
+    Route::get('/investissements/{investissement}', [AdminInvestissementController::class, 'show'])->name('investissements.show');
+    Route::get('/investissements-stats', [AdminInvestissementController::class, 'statistics'])->name('investissements.statistics');
+
+    // Gestion des retraits
+    Route::get('/retraits', [AdminRetraitController::class, 'index'])->name('retraits.index');
+    Route::get('/retraits/pending', [AdminRetraitController::class, 'pending'])->name('retraits.pending');
+    Route::post('/retraits/{retrait}/validate', [AdminRetraitController::class, 'validate'])->name('retraits.validate');
+    Route::post('/retraits/{retrait}/reject', [AdminRetraitController::class, 'reject'])->name('retraits.reject');
+    Route::get('/retraits/{retrait}', [AdminRetraitController::class, 'show'])->name('retraits.show');
+    Route::get('/retraits-stats', [AdminRetraitController::class, 'statistics'])->name('retraits.statistics');
+
+    // Gestion des utilisateurs
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::patch('/users/{user}/toggle', [UserController::class, 'toggleStatus'])->name('users.toggle');
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::get('/u8000sers/{user}/referrals', [UserController::class, 'referrals'])->name('users.referrals');
+});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,56 +110,61 @@ Route::middleware(['auth'])->group(function () {
 |
 */
 
-// Routes publiques
-Route::get('/', function () {
-    return view('welcome');
+
+
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+
+
+
+// Routes pour les parrainages
+Route::get('/parrainages', [ParrainageController::class, 'index'])->name('parrainages.index');
+
+
+// Route pour le premier login
+Route::get('/first-login', function() {
+    return view('auth.first-login');
+})->name('first.login');
+
+Route::get('/apropos', function() {
+    return view('a_propos');
 });
 
 
-// Routes protégées
-Route::middleware('auth')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Gestion des investissements
+Route::get('/investissements', [InvestissementController::class, 'index'])->name('investissements.index');
+Route::post('/investissements', [InvestissementController::class, 'store'])->name('investissements.store');
+Route::get('/investissements/create', [InvestissementController::class, 'create'])->name('investissements.create');
 
-    // Wallet
-    Route::prefix('wallet')->name('wallet.')->group(function () {
-        Route::get('/', [WalletController::class, 'show'])->name('show');
-        Route::get('/deposit', [WalletController::class, 'showDepositForm'])->name('deposit.form');
-        Route::post('/deposit', [WalletController::class, 'deposit'])->name('deposit');
-        Route::get('/withdraw', [WalletController::class, 'showWithdrawForm'])->name('withdraw.form');
-        Route::post('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
-    });
+Route::get('/investissements/{investissement}', [InvestissementController::class, 'show'])->name('investissements.show');
 
-    // Transactions
-    Route::prefix('transactions')->name('transactions.')->group(function () {
-        Route::get('/', [TransactionController::class, 'index'])->name('index');
+// Gestion des retraits
+Route::get('/retraits', [RetraitController::class, 'index'])->name('retraits.index');
+Route::get('/retraits/create', [RetraitController::class, 'create'])->name('retraits.create');
+Route::post('/retraits/store', [RetraitController::class, 'store'])->name('retraits.store');
 
-        Route::get('/transfer', [TransactionController::class, 'showTransferForm'])->name('transfer.form');
-        Route::post('/transfer', [TransactionController::class, 'transfer'])->name('transfer');
-        Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show');
-        Route::post('/check-user', [TransactionController::class, 'checkUser'])->name('check-user');
+// Vue d’attente de validation de dépôt
+Route::get('/investissements/paiement/attente/{id}', [InvestissementPaiementController::class, 'attente'])->name('investissements.paiement.attente');
 
-    });
+// Vue de succès de paiement/validation dépôt
+Route::get('/investissements/paiement/success', [InvestissementPaiementController::class, 'success'])->name('payment.success');
 
-    Route::get('/simulate2/{id}', [TransactionController::class, 'index2'])->name('simulate');    // Friends
-    Route::prefix('friends')->name('friends.')->group(function () {
-        Route::get('/', [FriendController::class, 'index'])->name('index');
-        Route::get('/search', [FriendController::class, 'showSearchForm'])->name('search.form');
-        Route::post('/search', [FriendController::class, 'search'])->name('search');
-        Route::post('/send-request', [FriendController::class, 'sendRequest'])->name('send-request');
-        Route::post('/accept-request', [FriendController::class, 'acceptRequest'])->name('accept-request');
-        Route::post('/decline-request', [FriendController::class, 'declineRequest'])->name('decline-request');
-        Route::post('/remove', [FriendController::class, 'remove'])->name('remove');
-         // New routes for PIN management
+Route::get('/investissements/paiement/require/{investissement}', [InvestissementPaiementController::class, 'index'])->name('payment.required');
 
-    });
-    Route::get('/set-pin', [TransactionController::class, 'showSetPinForm2'])->name('set.pin');
-Route::post('/transactions/set-pin', [TransactionController::class, 'setPin'])->name('transactions.set-pin');
+// Vue d'échec
+Route::get('/investissements/paiement/failed', [InvestissementPaiementController::class, 'failed'])->name('payment.failed');
 
-// Routes pour les transactions blockchain
-Route::get('/transactions', [BlockchainTransactionController::class, 'index'])->name('transactions.index');
-Route::get('/transaction/search', [BlockchainTransactionController::class, 'search'])->name('transaction.search');
-Route::post('/transaction/search', [BlockchainTransactionController::class, 'show'])->name('transaction.find');
-Route::get('/transaction/{hash}', [BlockchainTransactionController::class, 'show'])->name('transaction.status');
+// Vue d’état manuel (optionnel pour quand le délai max est dépassé)
+Route::get('/investissements/paiement/status/{id}', [InvestissementPaiementController::class, 'status'])->name('payment.status');
+
+Route::post('/investissements/{investissement}/attente', [App\Http\Controllers\InvestissementController::class, 'attente'])->name('investissements.attente');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/taches', [TacheJournaliereController::class, 'index'])->name('taches.index');
+    Route::get('/taches/{tacheJournaliere}/realiser', [TacheJournaliereController::class, 'show'])->name('taches.show');
+    Route::post('/taches/{tacheJournaliere}/complete', [TacheJournaliereController::class, 'complete'])->name('taches.complete');
+    Route::post('/taches/{tacheJournaliere}/verify-watch-time', [TacheJournaliereController::class, 'verifyWatchTime'])->name('taches.verify-watch-time');
+    Route::post('/taches/{tacheJournaliere}/verify-visit-time', [TacheJournaliereController::class, 'verifyVisitTime'])->name('taches.verify-visit-time');
 
 });

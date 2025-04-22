@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -17,15 +20,17 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'first_name',
-        'last_name',
+        'name',
         'email',
-        'phone_number',
-        'address',
-        'city',
-        'country',
+        'numero_telephone',
         'password',
+        'solde_actuel',
+        'code_parrainage',
+        'bonus_inscription',
+        'bonus_reclame',
+        'id_parrain',
+        'statut',
+        'is_admin',
     ];
 
     /**
@@ -48,51 +53,43 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Récupérer le portefeuille de l'utilisateur.
-     */
-    public function wallet(): HasOne
+    public function parrain(): BelongsTo
     {
-        return $this->hasOne(Wallet::class);
+        return $this->belongsTo(User::class, 'id_parrain');
     }
 
-    /**
-     * Récupérer les amis de l'utilisateur.
-     */
-    public function friends(): HasMany
+    public function filleuls(): HasMany
     {
-        return $this->hasMany(Friend::class, 'user_id');
+        return $this->hasMany(User::class, 'id_parrain');
     }
 
-    /**
-     * Récupérer les demandes d'amitié reçues.
-     */
-    public function friendRequests(): HasMany
+    public function parrainagesEnTantQueParrain(): HasMany
     {
-        return $this->hasMany(Friend::class, 'friend_id');
+        return $this->hasMany(Parrainage::class, 'parrain_id');
     }
 
-    /**
-     * Récupérer les transactions envoyées par l'utilisateur.
-     */
-    public function sentTransactions(): HasMany
+    public function parrainageEnTantQueFilleul(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'sender_id');
+        return $this->hasMany(Parrainage::class, 'filleul_id');
     }
 
-    /**
-     * Récupérer les transactions reçues par l'utilisateur.
-     */
-    public function receivedTransactions(): HasMany
+    public function investissements(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'receiver_id');
+        return $this->hasMany(Investissement::class);
     }
 
-    /**
-     * Obtenir le nom complet de l'utilisateur.
-     */
-    public function getFullNameAttribute(): string
+    public function tachesJournalieres(): HasMany
     {
-        return "{$this->first_name} {$this->last_name}";
+        return $this->hasMany(TacheJournaliere::class);
+    }
+
+    public function retraits(): HasMany
+    {
+        return $this->hasMany(Retrait::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\TacheJournaliere;
 
 class DashboardController extends Controller
 {
-    /**
-     * Affiche le tableau de bord de l'utilisateur.
-     */
+
     public function index()
     {
         $user = Auth::user();
-        $wallet = $user->wallet;
 
-        $recentTransactions = Transaction::where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
+        // Si c'est un administrateur, rediriger vers le tableau de bord admin
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
 
-        return view('dashboard.index', compact('user', 'wallet', 'recentTransactions'));
+        // Si c'est la première connexion de l'utilisateur, le rediriger vers la page de bienvenue
+        if (!$user->bonus_reclame) {
+            return redirect()->route('first.login');
+        }
+
+        return view('dashboard');
     }
 }

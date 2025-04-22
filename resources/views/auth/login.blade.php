@@ -2,6 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
+<br><br><br><br>
 <div class="bg-white shadow rounded-lg max-w-md mx-auto p-8">
     <h2 class="text-2xl font-bold text-center text-primary-700 mb-6">Connexion</h2>
 
@@ -34,10 +35,10 @@
         </div>
 
         <div>
-            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                Se connecter
-            </button>
-        </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Se connecter
+           </button>
+           </div>
     </form>
 
     <div class="mt-6 text-center">
